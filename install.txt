@@ -4,3 +4,4 @@ git clone https://github.com/kivy/pyjnius.git
 make
 python setup.py build
 python setup.py install
+#download apache tika-app

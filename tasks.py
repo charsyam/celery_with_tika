@@ -2,7 +2,7 @@ import os
 from celery import Celery
 from config import Config
 
-os.environ['CLASSPATH'] = "/home/charsyam/tika-app.jar"
+os.environ['CLASSPATH'] = Config.TIKA_CLASSPATH
 from jnius import autoclass
 
 celery = Celery('tasks', broker=Config.BROKER, backend=Config.BACKEND)
