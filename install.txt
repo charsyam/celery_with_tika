@@ -1,0 +1,6 @@
+apt-get install python-dev
+pip install Cython
+git clone https://github.com/kivy/pyjnius.git
+make
+python setup.py build
+python setup.py install
