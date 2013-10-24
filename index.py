@@ -11,7 +11,7 @@ import random
 from config import Config
 from tasks import textextractor
 
-ALLOWED_EXTENSIONS = set(['docx', 'doc', 'pdf', 'xls', 'xlsx', 'ppt', 'pptx'])
+ALLOWED_EXTENSIONS = set(['docx', 'doc', 'pdf', 'xls', 'xlsx', 'ppt', 'pptx', 'hwp'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = Config.UPLOAD_FOLDER
