@@ -10,9 +10,13 @@ function check() {
     var url = "/result/{{task_id}}";
     $.ajax({type: 'GET', url: url, async:false, success:function(data) {
         if (data.status == -1) {
+            alsert(data.contents);
+            clearInterval(obj)
         } else if (data.status == 0) {
             $('#contents').html(data.contents);
             clearInterval(obj)
+        } else if (data.status == 1) {
+            //waiting async job
         }
     }});
 }
