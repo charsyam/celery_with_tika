@@ -13,5 +13,5 @@ def textextractor(workid):
 
     args = shlex.split(command)
     contents = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
-    print contents
+    os.remove(filename)
     return (contents, 0)
