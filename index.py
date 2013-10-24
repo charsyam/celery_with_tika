@@ -20,10 +20,6 @@ def id_generator(size=16, chars=string.ascii_uppercase + string.digits):
     prefix = ''.join(random.choice(string.ascii_uppercase) for x in range(1))
     return "%s%s"%(prefix,''.join(random.choice(chars) for x in range(size)))
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
 @app.route('/result/<task_id>')
 def result(task_id):
     res = textextractor.AsyncResult(task_id)
@@ -40,12 +36,14 @@ def result(task_id):
 def index():
     if request.method == 'POST':
         file = request.files['file']
-        if file and allowed_file(file.filename):
+        if file:
             workid = id_generator();
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], workid))
             result = textextractor.delay(workid)
             return render_template('result.html',task_id=result.task_id)
+        else:
+            return render_template('index.html')
     else:
         return render_template('index.html')
 

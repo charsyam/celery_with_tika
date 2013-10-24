@@ -7,13 +7,16 @@ from config import Config
 celery = Celery('tasks', broker=Config.BROKER, backend=Config.BACKEND)
 
 def ishwp(filename):
-    command = "hwp5proc cat %s FileHeader"%(filename)
-    args = shlex.split(command)
-    contents = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
-    if contents.startswith("HWP Document File"):
-        return True
-
-    return False
+    try:
+        command = "hwp5proc cat %s FileHeader"%(filename)
+        args = shlex.split(command)
+        contents = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+        if contents.startswith("HWP Document File"):
+            return True
+        else:
+            return False
+    except:
+        return False
 
 def readfile(filename):
     f = open(filename)
@@ -25,25 +28,35 @@ def readfile(filename):
 def textextractor(workid):
     filename = "%s/%s"%(Config.UPLOAD_FOLDER, workid)
     builds = "%s/%s"%(Config.BUILD_FOLDER, workid)
+    status = 0
 
     if ishwp(filename) == False:
-        command = "/usr/bin/java -jar %s -t %s > output"%(Config.TIKA_CLASSPATH,filename)
+        command = "/usr/bin/java -jar %s -t %s"%(Config.TIKA_CLASSPATH,filename)
 
+        print command
         args = shlex.split(command)
-        contents = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+        try:
+            contents = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+        except:
+            contents = "tika error"
+            status = -1
     else:
-        command = "mkdir -p %s"%(builds)
-        os.system(command)
+        try:
+            command = "mkdir -p %s"%(builds)
+            os.system(command)
 
-        os.chdir(builds)
-        command = "hwp5txt %s"%(filename)
-        os.system(command)
+            os.chdir(builds)
+            command = "hwp5txt %s"%(filename)
+            os.system(command)
 
-        txtfile = "%s/%s.txt"%(builds,workid)
-        contents = readfile(txtfile)
+            txtfile = "%s/%s.txt"%(builds,workid)
+            contents = readfile(txtfile)
 
-        command = "rm -rf %s"%(builds)
-        os.system(command)
+            command = "rm -rf %s"%(builds)
+            os.system(command)
+        except:
+            contents = "hwp parsing error"
+            status = -1
 
     os.remove(filename)
-    return (contents, 0)
+    return (contents, status)
